@@ -16,8 +16,14 @@ module KnapsackPro
 
     def get_from_redis()
       puts @all_test_files_to_run
-      # hash = Digest::MD5.hexdigest(@repository_adapter.commit_hash + @repository_adapter.branch)
       # TODO
+      puts KnapsackPro::Config::Env.node_index
+      puts KnapsackPro::Config::Env.node_build_id
+      puts KnapsackPro::Config::Env.commit_hash
+      puts KnapsackPro::Config::Env.branch
+      puts KnapsackPro::Config::Env.project_dir
+      puts Digest::MD5.hexdigest(KnapsackPro::Config::Env.commit_hash + KnapsackPro::Config::Env.branch)
+      puts Digest::MD5.hexdigest(@repository_adapter.commit_hash + @repository_adapter.branch)
       puts @redis.get("test")
       []
     end
