@@ -40,6 +40,8 @@ module KnapsackPro
               status: :completed,
               exitstatus: exitstatus,
             }
+          elsif test_file_path.nil?
+            sleep(1)
           else
             options = ::RSpec::Core::ConfigurationOptions.new(cli_args + [test_file_path])
             exit_code = ::RSpec::Core::Runner.new(options).run($stderr, $stdout)
