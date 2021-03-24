@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/knapsack_pro'
+
+runner = ARGV[0]
+arguments = ARGV[1]
+
+MAP = {
+  'queue:rspec' => KnapsackPro::Runners::Queue::RSpecRunner,
+}
+
+runner_class = MAP[runner]
+
+if runner_class
+  runner_class.run(arguments)
+else
+  raise 'Undefined runner. Please provide runner name and optional arguments, for instance: knapsack_pro rspec "--color --profile"'
+end
