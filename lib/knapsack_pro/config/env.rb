@@ -69,17 +69,14 @@ module KnapsackPro
 
         def redis_host
           ENV['REDIS_HOST']
-          "localhost"
         end
 
         def redis_post
           ENV['REDIS_PORT'].to_i
-          6379
         end
 
         def redis_db
           ENV['REDIS_DB'].to_i
-          0
         end
 
         def ci_env_for(env_name)
