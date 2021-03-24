@@ -6,7 +6,6 @@ module KnapsackPro
 
     def initialize(adapter_class)
       @adapter_class = adapter_class
-      ENV['KNAPSACK_PRO_TEST_RUNNER'] = TEST_RUNNER_MAP[adapter_class]
     end
 
     def allocator

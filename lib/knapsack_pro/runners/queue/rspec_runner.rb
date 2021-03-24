@@ -7,67 +7,50 @@ module KnapsackPro
 
           runner = new(KnapsackPro::Adapters::RSpecAdapter)
 
+          hash = Digest::MD5.hexdigest(
+            KnapsackPro::Config::Env.commit_hash + 
+            KnapsackPro::Config::Env.branch +
+            KnapsackPro::Config::Env.node_build_id
+          )
           cli_args = (args || '').split
-          # if user didn't provide the format then use explicitly default progress formatter
-          # in order to avoid KnapsackPro::Formatters::RSpecQueueSummaryFormatter being the only default formatter
-          if !cli_args.any? { |arg| arg.start_with?('-f') || arg.start_with?('--format')}
-            cli_args += ['--format', 'progress']
-          end
-  
-          cli_args += [
-            '--default-path', runner.test_dir,
-          ]
 
           accumulator = {
             status: :next,
             runner: runner,
-            can_initialize_queue: true,
-            args: cli_args,
             exitstatus: 0,
           }
+
+          if KnapsackPro::Config::Env.ci_node_index == 0
+            runner.init_queue_redis(hash)
+          end
+
           while accumulator[:status] == :next
-            accumulator = run_tests(accumulator)
+            accumulator = run_tests(accumulator, runner, cli_args, hash)
           end
 
           Kernel.exit(accumulator[:exitstatus])
         end
 
-        def self.run_tests(accumulator)
-          runner = accumulator.fetch(:runner)
-          can_initialize_queue = accumulator.fetch(:can_initialize_queue)
-          args = accumulator.fetch(:args)
+        def self.run_tests(accumulator, runner, cli_args, hash)
           exitstatus = accumulator.fetch(:exitstatus)
+          test_file_path = runner.get_from_redis(hash)
 
-          test_file_path = runner.get_from_redis(can_initialize_queue)
-
-          if test_file_path.nil?
-            return {
-              status: :next,
-              runner: runner,
-              can_initialize_queue: false,
-              args: args,
-              exitstatus: exitstatus,
-            }
-          elsif test_file_path == "finish"
+          if test_file_path == "finish"
             return {
               status: :completed,
               exitstatus: exitstatus,
             }
           else
-            args.append(test_file_path)
-
-            options = ::RSpec::Core::ConfigurationOptions.new(args)
+            options = ::RSpec::Core::ConfigurationOptions.new(cli_args + [test_file_path])
             exit_code = ::RSpec::Core::Runner.new(options).run($stderr, $stdout)
+            RSpec.clear_examples
             exitstatus = exit_code if exit_code != 0
-
-            return {
-              status: :next,
-              runner: runner,
-              can_initialize_queue: false,
-              args: args,
-              exitstatus: exitstatus,
-            }
           end
+          
+          return {
+            status: :next,
+            exitstatus: exitstatus,
+          }
         end
       end
     end
