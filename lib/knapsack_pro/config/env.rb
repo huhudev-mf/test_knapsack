@@ -79,6 +79,10 @@ module KnapsackPro
           (ENV['REDIS_DB'] || "0").to_i
         end
 
+        def redis_password
+          ENV['REDIS_PASSWORD']
+        end
+
         def ci_env_for(env_name)
           value = nil
           ci_list = KnapsackPro::Config::CI.constants - [:Base]

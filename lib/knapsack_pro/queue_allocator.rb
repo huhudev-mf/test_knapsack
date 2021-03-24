@@ -11,6 +11,7 @@ module KnapsackPro
         host: KnapsackPro::Config::Env.redis_host, 
         port: KnapsackPro::Config::Env.redis_post,
         db: KnapsackPro::Config::Env.redis_db,
+        password: KnapsackPro::Config::Env.redis_password,
       )
     end
 
