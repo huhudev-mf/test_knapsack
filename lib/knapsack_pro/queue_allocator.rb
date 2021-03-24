@@ -7,26 +7,40 @@ module KnapsackPro
       @ci_node_build_id = args.fetch(:ci_node_build_id)
       @repository_adapter = args.fetch(:repository_adapter)
 
-      # @redis = Redis.new(
-      #   host: KnapsackPro::Config::Env.redis_host, 
-      #   port: KnapsackPro::Config::Env.redis_post,
-      #   db: KnapsackPro::Config::Env.redis_db,
-      # )
+      @redis = Redis.new(
+        host: KnapsackPro::Config::Env.redis_host, 
+        port: KnapsackPro::Config::Env.redis_post,
+        db: KnapsackPro::Config::Env.redis_db,
+      )
     end
 
-    def get_from_redis()
-      puts @all_test_files_to_run
-      # TODO
-      puts KnapsackPro::Config::Env.ci_node_total
-      puts KnapsackPro::Config::Env.ci_node_index
-      puts KnapsackPro::Config::Env.ci_node_build_id
-      puts KnapsackPro::Config::Env.commit_hash
-      puts KnapsackPro::Config::Env.branch
-      puts KnapsackPro::Config::Env.project_dir
-      puts Digest::MD5.hexdigest(KnapsackPro::Config::Env.commit_hash + KnapsackPro::Config::Env.branch)
-      puts Digest::MD5.hexdigest(@repository_adapter.commit_hash + @repository_adapter.branch)
-      # puts @redis.get("test")
-      []
+    def get_from_redis(is_init)
+      hash = Digest::MD5.hexdigest(KnapsackPro::Config::Env.commit_hash + KnapsackPro::Config::Env.branch)
+      if is_init        
+        if KnapsackPro::Config::Env.ci_node_index == 0
+          put_redis(hash)
+          put_finish_redis(hash, KnapsackPro::Config::Env.ci_node_total)
+        end
+      end
+
+      test_file_path = get_redis(hash)
+      return test_file_path
+    end
+
+    def put_redis(hash)
+      @all_test_files_to_run.each do |test|
+        @redis.rpush(hash, test['path'])
+      end
+    end
+
+    def get_redis(hash)
+      @redis.lpop(hash)
+    end
+
+    def put_finish_redis(hash, num)
+      num.times do |i|
+        @redis.rpush(hash, "finish")
+      end
     end
   end
 end

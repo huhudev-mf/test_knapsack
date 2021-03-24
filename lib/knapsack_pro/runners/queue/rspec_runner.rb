@@ -24,7 +24,6 @@ module KnapsackPro
             can_initialize_queue: true,
             args: cli_args,
             exitstatus: 0,
-            all_test_file_paths: [],
           }
           while accumulator[:status] == :next
             accumulator = run_tests(accumulator)
@@ -38,31 +37,28 @@ module KnapsackPro
           can_initialize_queue = accumulator.fetch(:can_initialize_queue)
           args = accumulator.fetch(:args)
           exitstatus = accumulator.fetch(:exitstatus)
-          all_test_file_paths = accumulator.fetch(:all_test_file_paths)
 
-          test_file_paths = runner.get_from_redis()
+          test_file_path = runner.get_from_redis(can_initialize_queue)
 
-          if test_file_paths.empty?
-            unless all_test_file_paths.empty?
-
-              log_rspec_command(args, all_test_file_paths, :end_of_queue)
-            end
-
+          if test_file_path.nil?
+            return {
+              status: :next,
+              runner: runner,
+              can_initialize_queue: false,
+              args: args,
+              exitstatus: exitstatus,
+            }
+          elsif test_file_path == "finish"
             return {
               status: :completed,
               exitstatus: exitstatus,
             }
           else
-            all_test_file_paths += test_file_paths
-            cli_args = args + test_file_paths
+            args.append(test_file_path)
 
-            log_rspec_command(args, test_file_paths, :subset_queue)
-
-            options = ::RSpec::Core::ConfigurationOptions.new(cli_args)
+            options = ::RSpec::Core::ConfigurationOptions.new(args)
             exit_code = ::RSpec::Core::Runner.new(options).run($stderr, $stdout)
             exitstatus = exit_code if exit_code != 0
-
-            KnapsackPro::Report.save_subset_queue_to_file
 
             return {
               status: :next,
@@ -70,28 +66,8 @@ module KnapsackPro
               can_initialize_queue: false,
               args: args,
               exitstatus: exitstatus,
-              all_test_file_paths: all_test_file_paths,
             }
           end
-        end
-
-        private
-
-        def self.log_rspec_command(cli_args, test_file_paths, type)
-          case type
-          when :subset_queue
-            KnapsackPro.logger.info("To retry in development the subset of tests fetched from API queue please run below command on your machine. If you use --order random then remember to add proper --seed 123 that you will find at the end of rspec command.")
-          when :end_of_queue
-            KnapsackPro.logger.info("To retry in development the tests for this CI node please run below command on your machine. It will run all tests in a single run. If you need to reproduce a particular subset of tests fetched from API queue then above after each request to Knapsack Pro API you will find example rspec command.")
-          end
-
-          stringify_cli_args = cli_args.join(' ')
-          stringify_cli_args.slice!("--format #{KnapsackPro::Formatters::RSpecQueueSummaryFormatter}")
-
-          KnapsackPro.logger.info(
-            "bundle exec rspec #{stringify_cli_args} " +
-            KnapsackPro::TestFilePresenter.stringify_paths(test_file_paths)
-          )
         end
       end
     end

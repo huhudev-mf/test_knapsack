@@ -15,8 +15,8 @@ module KnapsackPro
           @allocator = allocator_builder.allocator
         end
 
-        def get_from_redis()
-          allocator.get_from_redis()
+        def get_from_redis(is_init)
+          allocator.get_from_redis(is_init)
         end
 
         def test_dir
