@@ -72,11 +72,11 @@ module KnapsackPro
         end
 
         def redis_post
-          ENV['REDIS_PORT'].to_i
+          (ENV['REDIS_PORT'] || "6379").to_i
         end
 
         def redis_db
-          ENV['REDIS_DB'].to_i
+          (ENV['REDIS_DB'] || "0").to_i
         end
 
         def ci_env_for(env_name)
