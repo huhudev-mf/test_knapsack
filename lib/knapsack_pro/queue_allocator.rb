@@ -17,8 +17,9 @@ module KnapsackPro
     def get_from_redis()
       puts @all_test_files_to_run
       # TODO
-      puts KnapsackPro::Config::Env.node_index
-      puts KnapsackPro::Config::Env.node_build_id
+      puts KnapsackPro::Config::Env.ci_node_total
+      puts KnapsackPro::Config::Env.ci_node_index
+      puts KnapsackPro::Config::Env.ci_node_build_id
       puts KnapsackPro::Config::Env.commit_hash
       puts KnapsackPro::Config::Env.branch
       puts KnapsackPro::Config::Env.project_dir
