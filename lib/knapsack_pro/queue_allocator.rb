@@ -17,6 +17,7 @@ module KnapsackPro
     end
 
     def init_queue_redis(hash)
+      puts "init_queue_redis: " + @all_test_files_to_run.length().to_s
       @redis.lpush(hash, @all_test_files_to_run)
       @redis.lpush(hash, Array.new(KnapsackPro::Config::Env.ci_node_total) {|i| "finish" })
     end
