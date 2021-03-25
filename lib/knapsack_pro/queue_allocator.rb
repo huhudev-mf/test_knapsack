@@ -13,6 +13,7 @@ module KnapsackPro
         db: KnapsackPro::Config::Env.redis_db,
         password: KnapsackPro::Config::Env.redis_password,
       )
+      puts "Redis Connected!"
     end
 
     def init_queue_redis(hash)

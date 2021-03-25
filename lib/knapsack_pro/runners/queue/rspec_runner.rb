@@ -32,6 +32,7 @@ module KnapsackPro
         def self.run_tests(accumulator, runner, cli_args, hash)
           exitstatus = accumulator.fetch(:exitstatus)
           test_file_path = runner.get_from_redis(hash)
+          puts test_file_path
 
           if test_file_path == "finish"
             return {
