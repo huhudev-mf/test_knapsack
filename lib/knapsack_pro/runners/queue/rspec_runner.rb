@@ -9,8 +9,7 @@ module KnapsackPro
           cli_args = (args || '').split
           hash = Digest::MD5.hexdigest(
             KnapsackPro::Config::Env.commit_hash + 
-            KnapsackPro::Config::Env.branch +
-            KnapsackPro::Config::Env.ci_node_total.to_s
+            KnapsackPro::Config::Env.branch
           )
 
           accumulator = {

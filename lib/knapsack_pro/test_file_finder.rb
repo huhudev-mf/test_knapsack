@@ -1,12 +1,11 @@
 module KnapsackPro
   class TestFileFinder
-    def self.call(test_file_pattern, test_file_list_enabled: true)
-      new(test_file_pattern, test_file_list_enabled).call
+    def self.call(test_file_pattern)
+      new(test_file_pattern).call
     end
 
-    def initialize(test_file_pattern, test_file_list_enabled)
+    def initialize(test_file_pattern)
       @test_file_pattern = test_file_pattern
-      @test_file_list_enabled = test_file_list_enabled
     end
 
     def call
@@ -19,10 +18,10 @@ module KnapsackPro
 
     private
 
-    attr_reader :test_file_pattern, :test_file_list_enabled
+    attr_reader :test_file_pattern
 
     def test_files
-      stdout, stdeerr, status = Open3.capture3('bundle exec rspec --format j --dry-run ' + @test_file_pattern + ' | grep -ohE \'\{.+\}\' | python -c "import sys, json; list([sys.stdout.write(x[\'id\'][2:] + \'\n\') for x in json.load(sys.stdin)[\'examples\']])"')
+      stdout, stdeerr, status = Open3.capture3('bundle exec rspec --format j --dry-run ' + @test_file_pattern + ' 2>/dev/null | grep -ohE \'\{.+\}\' | python -c "import sys, json; list([sys.stdout.write(x[\'id\'][2:] + \'\n\') for x in json.load(sys.stdin)[\'examples\']])"')
       test_file_paths = stdout.split("\n")
 
       excluded_test_file_paths =
