@@ -56,6 +56,10 @@ module KnapsackPro
             ci_env_for(:project_dir)
         end
 
+        def redis_expire
+          ENV['REDIS_EXPIRE'] || 3600 # 1h
+        end
+
         def test_file_pattern
           ENV['TEST_FILE_PATTERN']
         end

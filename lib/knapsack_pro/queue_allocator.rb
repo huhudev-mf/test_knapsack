@@ -21,6 +21,7 @@ module KnapsackPro
       puts "init_queue_redis: " + @all_test_files_to_run.length().to_s + " tests"
       @redis.lpush(hash, @all_test_files_to_run)
       @redis.lpush(hash, Array.new(@ci_node_total) { |i| "finish" })
+      @redis.expire(hash, KnapsackPro::Config::Env.redis_expire)
     end
 
     def get_from_redis(hash)
