@@ -18,13 +18,8 @@ module KnapsackPro
 
     def init_queue_redis(hash)
       puts @all_test_files_to_run.length()
-      @all_test_files_to_run.each do |test_file|
-        puts test_file
-        @redis.rpush(hash, test_file)
-      end
-      KnapsackPro::Config::Env.ci_node_total.times do |i|
-        @redis.rpush(hash, "finish")
-      end
+      @redis.pipelined{ @all_test_files_to_run.each{ |x| @redis.rpush(hash, x) } }
+      @redis.pipelined{ KnapsackPro::Config::Env.ci_node_total.times{ |x| @redis.rpush(hash, "finish") } }
     end
 
     def get_from_redis(hash)
