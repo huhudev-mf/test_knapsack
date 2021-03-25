@@ -10,8 +10,9 @@ module KnapsackPro
           hash = Digest::MD5.hexdigest(
             KnapsackPro::Config::Env.commit_hash + 
             KnapsackPro::Config::Env.branch +
-            KnapsackPro::Config::Env.ci_node_build_id
+            KnapsackPro::Config::Env.ci_node_total
           )
+          puts hash
 
           accumulator = {
             status: :next,
