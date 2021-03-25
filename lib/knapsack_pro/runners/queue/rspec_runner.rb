@@ -7,11 +7,12 @@ module KnapsackPro
 
           runner = new(KnapsackPro::Adapters::RSpecAdapter)
           cli_args = (args || '').split
-          hash = Digest::MD5.hexdigest(
-            KnapsackPro::Config::Env.commit_hash + 
-            KnapsackPro::Config::Env.branch +
-            KnapsackPro::Config::Env.ci_node_build_id
-          )
+          # hash = Digest::MD5.hexdigest(
+          #   KnapsackPro::Config::Env.commit_hash + 
+          #   KnapsackPro::Config::Env.branch +
+          #   KnapsackPro::Config::Env.ci_node_build_id
+          # )
+          hash = "hash"
 
           accumulator = {
             status: :next,
@@ -32,7 +33,6 @@ module KnapsackPro
         def self.run_tests(accumulator, runner, cli_args, hash)
           exitstatus = accumulator.fetch(:exitstatus)
           test_file_path = runner.get_from_redis(hash)
-          puts test_file_path
 
           if test_file_path == "finish"
             return {

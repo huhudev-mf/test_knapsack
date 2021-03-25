@@ -69,6 +69,7 @@ module KnapsackPro
 
         def redis_host
           ENV['REDIS_HOST']
+          "192.168.50.185"
         end
 
         def redis_post
