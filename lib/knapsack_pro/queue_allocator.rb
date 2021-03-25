@@ -17,12 +17,12 @@ module KnapsackPro
     end
 
     def init_queue_redis(hash)
-      @redis.rpush(hash, @all_test_files_to_run)
-      @redis.rpush(hash, Array.new(KnapsackPro::Config::Env.ci_node_total) {|i| "finish" })
+      @redis.lpush(hash, @all_test_files_to_run)
+      @redis.lpush(hash, Array.new(KnapsackPro::Config::Env.ci_node_total) {|i| "finish" })
     end
 
     def get_from_redis(hash)
-      return @redis.lpop(hash)
+      return @redis.rpop(hash)
     end
   end
 end
