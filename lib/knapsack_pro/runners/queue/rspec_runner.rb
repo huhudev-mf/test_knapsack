@@ -8,8 +8,9 @@ module KnapsackPro
           runner = new(KnapsackPro::Adapters::RSpecAdapter)
           cli_args = (args || '').split
           hash = Digest::MD5.hexdigest(
-            KnapsackPro::Config::Env.commit_hash + 
-            KnapsackPro::Config::Env.branch
+            KnapsackPro::Config::Env.project_name + 
+            KnapsackPro::Config::Env.branch + 
+            KnapsackPro::Config::Env.commit_hash
           )
 
           accumulator = {

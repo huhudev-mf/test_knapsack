@@ -16,6 +16,7 @@ module KnapsackPro
       puts "Redis Connected!"
     end
 
+    # TODO: need ensure here push completely
     def init_queue_redis(hash)
       puts "init_queue_redis: " + @all_test_files_to_run.length().to_s + " tests"
       @redis.lpush(hash, @all_test_files_to_run)
@@ -23,7 +24,11 @@ module KnapsackPro
     end
 
     def get_from_redis(hash)
-      return @redis.rpop(hash)
+      begin
+        return @redis.rpop(hash)
+      rescue
+        return nil
+      end
     end
   end
 end

@@ -46,6 +46,11 @@ module KnapsackPro
             ci_env_for(:branch)
         end
 
+        def project_name
+          ENV['PROJECT_NAME'] ||
+            ci_env_for(:project_name)
+        end
+
         def project_dir
           ENV['PROJECT_DIR'] ||
             ci_env_for(:project_dir)
