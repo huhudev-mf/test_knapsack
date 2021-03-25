@@ -22,7 +22,7 @@ module KnapsackPro
     attr_reader :test_file_pattern, :test_file_list_enabled
 
     def test_files
-      stdout, stdeerr, status = Open3.capture3('bundle exec rspec --format j --dry-run ' + 'spec' + ' | python -c "import sys, json; list([sys.stdout.write(x[\'id\'][2:] + \'\n\') for x in json.load(sys.stdin)[\'examples\']])"')
+      stdout, stdeerr, status = Open3.capture3('bundle exec rspec --format j --dry-run ' + @test_file_pattern + ' | python -c "import sys, json; list([sys.stdout.write(x[\'id\'][2:] + \'\n\') for x in json.load(sys.stdin)[\'examples\']])"')
       test_file_paths = stdout.split("\n")
 
       excluded_test_file_paths =

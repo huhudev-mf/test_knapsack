@@ -7,12 +7,11 @@ module KnapsackPro
 
           runner = new(KnapsackPro::Adapters::RSpecAdapter)
           cli_args = (args || '').split
-          # hash = Digest::MD5.hexdigest(
-          #   KnapsackPro::Config::Env.commit_hash + 
-          #   KnapsackPro::Config::Env.branch +
-          #   KnapsackPro::Config::Env.ci_node_build_id
-          # )
-          hash = "hash"
+          hash = Digest::MD5.hexdigest(
+            KnapsackPro::Config::Env.commit_hash + 
+            KnapsackPro::Config::Env.branch +
+            KnapsackPro::Config::Env.ci_node_build_id
+          )
 
           accumulator = {
             status: :next,
