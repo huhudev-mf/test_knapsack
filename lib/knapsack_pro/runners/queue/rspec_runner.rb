@@ -12,7 +12,6 @@ module KnapsackPro
             KnapsackPro::Config::Env.branch +
             KnapsackPro::Config::Env.ci_node_total.to_s
           )
-          puts hash
 
           accumulator = {
             status: :next,
