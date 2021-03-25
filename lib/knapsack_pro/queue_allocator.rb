@@ -17,6 +17,7 @@ module KnapsackPro
     end
 
     def init_queue_redis(hash)
+      puts KnapsackPro::Config::Env.ci_node_total.times
       @all_test_files_to_run.each do |test_file|
         puts test_file
         @redis.rpush(hash, test_file)
