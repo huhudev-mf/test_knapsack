@@ -31,24 +31,32 @@ module KnapsackPro
 
         def self.run_tests(accumulator, runner, cli_args, hash)
           exitstatus = accumulator.fetch(:exitstatus)
-          test_file_path = runner.get_from_redis(hash)
+          test_file_paths = runner.get_from_redis(hash)
 
-          if test_file_path == "finish"
-            return {
-              status: :completed,
-              exitstatus: exitstatus,
-            }
-          elsif test_file_path.nil?
+          if test_file_paths.nil?
             sleep(1)
           else
-            options = ::RSpec::Core::ConfigurationOptions.new(cli_args + [test_file_path])
+            finish = false
+            puts 
+            if test_file_paths.include?("0")
+              finish = true
+              test_file_paths = test_file_paths.select {|t| t != "0" }
+            end
+
+            options = ::RSpec::Core::ConfigurationOptions.new(cli_args + test_file_paths)
             exit_code = ::RSpec::Core::Runner.new(options).run($stderr, $stdout)
             RSpec.clear_examples
             exitstatus = exit_code if exit_code != 0
           end
           
+          if finish
+            status = :completed
+          else
+            status = :next
+          end
+
           return {
-            status: :next,
+            status: status,
             exitstatus: exitstatus,
           }
         end

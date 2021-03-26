@@ -57,7 +57,7 @@ module KnapsackPro
         end
 
         def redis_expire
-          ENV['REDIS_EXPIRE'] || 3600 # 1h
+          (ENV['REDIS_EXPIRE'] || "3600").to_i # 1h
         end
 
         def test_file_pattern
@@ -90,6 +90,10 @@ module KnapsackPro
 
         def redis_password
           ENV['REDIS_PASSWORD']
+        end
+
+        def redis_get_num
+          (ENV['REDIS_GET_NUM'] || "100").to_i
         end
 
         def ci_env_for(env_name)

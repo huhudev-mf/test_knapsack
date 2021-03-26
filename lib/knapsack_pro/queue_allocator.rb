@@ -19,15 +19,23 @@ module KnapsackPro
     # TODO: need ensure here push completely
     def init_queue_redis(hash)
       puts "init_queue_redis: " + @all_test_files_to_run.length().to_s + " tests"
-      @redis.lpush(hash, @all_test_files_to_run)
-      @redis.lpush(hash, Array.new(@ci_node_total) { |i| "finish" })
+      num = KnapsackPro::Config::Env.redis_get_num
+      puts  num
+      @redis.rpush(hash, @all_test_files_to_run)
+      @redis.rpush(hash, Array.new(@ci_node_total * num) { |i| "0" })
       @redis.expire(hash, KnapsackPro::Config::Env.redis_expire)
     end
 
     def get_from_redis(hash)
+      num = KnapsackPro::Config::Env.redis_get_num
       begin
-        return @redis.rpop(hash)
-      rescue
+        result, _ = @redis.multi do |multi|
+          @redis.lrange(hash, 0, num - 1)
+          @redis.ltrim(hash, num, -1)
+        end
+        return result
+      rescue => error
+        puts error
         return nil
       end
     end
