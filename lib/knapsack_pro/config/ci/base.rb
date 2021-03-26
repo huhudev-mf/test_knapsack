@@ -20,6 +20,9 @@ module KnapsackPro
         def branch
         end
 
+        def project_name
+        end
+
         def project_dir
         end
       end

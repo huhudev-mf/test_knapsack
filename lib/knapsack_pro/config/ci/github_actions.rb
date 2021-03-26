@@ -26,6 +26,10 @@ module KnapsackPro
           ENV['GITHUB_REF'] || ENV['GITHUB_SHA']
         end
 
+        def project_name
+          ENV['GITHUB_REPOSITORY']
+        end
+
         def project_dir
           ENV['GITHUB_WORKSPACE']
         end
